@@ -10,6 +10,11 @@ android {
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
+        dataBinding {
+            enabled = true
+        }
+
+
 
 
     }
@@ -53,4 +58,6 @@ dependencies {
     implementation "android.arch.lifecycle:reactivestreams:$lifecycle_version"
     // optional - Test helpers for LiveData
     testImplementation "android.arch.core:core-testing:$lifecycle_version"
+    implementation 'io.reactivex.rxjava2:rxjava:2.1.14'
+    implementation 'io.reactivex.rxjava2:rxandroid:2.0.2'
 }
