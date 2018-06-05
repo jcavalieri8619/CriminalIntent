@@ -3,9 +3,7 @@ package com.bignerdranch.android.criminalintent.UI.crimedetail;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.databinding.DataBindingUtil;
-import android.databinding.Observable;
-import android.databinding.ObservableField;
-import android.graphics.Color;
+
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -23,7 +21,6 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 
 
-import com.bignerdranch.android.criminalintent.BR;
 
 import com.bignerdranch.android.criminalintent.databinding.FragmentCrimeBinding;
 import com.bignerdranch.android.criminalintent.Injection;
@@ -31,7 +28,7 @@ import com.bignerdranch.android.criminalintent.R;
 import com.bignerdranch.android.criminalintent.UI.DatePickerFragment;
 
 import java.util.Calendar;
-import java.util.Date;
+
 import java.util.Objects;
 import java.util.UUID;
 
@@ -47,13 +44,10 @@ import java.util.UUID;
 public class CrimeFragment extends Fragment {
 
     private static final String ARG_CRIME_UUID = CrimeFragment.class.getCanonicalName() + ":ARG_CRIME_UUID";
-    private static final String ARG_ADDNEW_FLAG = CrimeFragment.class.getCanonicalName().concat(" ARG_ADDNEW_CRIME");
     private static final String ARG_DATE_CRIME = CrimeFragment.class.getCanonicalName() + ":ARG_DATE_CRIME";
 
     private static final String TAG = CrimeFragment.class.getSimpleName().concat("::JPC");
 
-
-    private UUID mCrime_UUID;
 
     private OnFragmentInteractionListener mListener;
 
@@ -63,10 +57,6 @@ public class CrimeFragment extends Fragment {
     private Button mDateButton;
     private EditText mTitleField;
 
-
-//    private boolean mAddingNewCrime;
-
-    private DetailViewModel.Factory mViewModelFactory;
 
     private DetailViewModel mDetailViewModel;
 
@@ -144,8 +134,6 @@ public class CrimeFragment extends Fragment {
     public void onUserChangedDateTime(Calendar new_date) {
         mDetailViewModel.setDate(new_date.getTime());
 
-        updateDateUI();
-
     }
 
 
@@ -159,7 +147,7 @@ public class CrimeFragment extends Fragment {
     // TODO: Rename and change types and number of parameters
     public static CrimeFragment newInstanceForUUID(UUID crime_UUID) {
 
-        Log.d(TAG, "newInstanceForUUID: fragment created for updating existing crime ID: " + crime_UUID.toString());
+        Log.d(TAG, "newInstanceForUUID: fragment created for  crime ID: " + crime_UUID.toString());
 
 
         CrimeFragment fragment = new CrimeFragment();
@@ -174,19 +162,7 @@ public class CrimeFragment extends Fragment {
         return fragment;
     }
 
-//    public static CrimeFragment newInstanceToAddNewCrime() {
-//        Log.d(TAG, "newInstanceToAddNewCrime: fragment created for adding new crime");
-//
-//
-//        CrimeFragment fragment = new CrimeFragment();
-//        Bundle args = new Bundle();
-//        args.putBoolean(ARG_ADDNEW_FLAG, true);
-//        fragment.setArguments(args);
-//
-//        return fragment;
-//
-//
-//    }
+
 
 
     @Override
@@ -215,24 +191,24 @@ public class CrimeFragment extends Fragment {
         super.onCreate(savedInstanceState);
         Log.d(TAG, "onCreate: lifecycle");
 
-        mCrime_UUID = null;
+        UUID crime_UUID = null;
 
 
         assert getArguments() != null;
-        mCrime_UUID = (UUID) getArguments().getSerializable(ARG_CRIME_UUID);
+        crime_UUID = (UUID) getArguments().getSerializable(ARG_CRIME_UUID);
 
 
-        assert mCrime_UUID != null;
+        assert crime_UUID != null;
 
 
         //valid crime ID or HEAD since initEmptyPager now returns HEADER
-        Log.d(TAG, "onCreate: found ARG_CRIME_UUID frag arg: " + mCrime_UUID.toString());
+        Log.d(TAG, "onCreate: found ARG_CRIME_UUID frag arg: " + crime_UUID.toString());
 
 
-        mViewModelFactory = Injection.provideDetailModelFactory(getActivity(), mCrime_UUID);
+        final DetailViewModel.Factory viewModelFactory = Injection.provideDetailModelFactory(getActivity(), crime_UUID);
 
 
-        mDetailViewModel = ViewModelProviders.of(this, mViewModelFactory).get(DetailViewModel.class);
+        mDetailViewModel = ViewModelProviders.of(this, viewModelFactory).get(DetailViewModel.class);
 
 
 
@@ -243,8 +219,6 @@ public class CrimeFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         Log.d(TAG, "onCreateView: lifecycle");
-
-//        View v = inflater.inflate(R.layout.fragment_crime, container, false);
 
         FragmentCrimeBinding binding = DataBindingUtil.inflate(inflater, R.layout.fragment_crime, container, false);
 
@@ -260,21 +234,6 @@ public class CrimeFragment extends Fragment {
 
 
 
-
-
-        mDetailViewModel.mIsLoading.addOnPropertyChangedCallback(new Observable.OnPropertyChangedCallback() {
-            @Override
-            public void onPropertyChanged(final Observable sender, final int propertyId) {
-
-
-
-
-
-            }
-        });
-
-
-
         View v = binding.getRoot();
 
         setupViews(v);
@@ -286,7 +245,6 @@ public class CrimeFragment extends Fragment {
         updateTitleUI();
 
 
-        updateDateUI();
 
         return v;
     }
@@ -333,16 +291,12 @@ public class CrimeFragment extends Fragment {
 
     private void setupViews(final View v) {
         mTitleField = v.findViewById(R.id.crime_title);
-//        mTitleField.setText(mDetailViewModel.getTitle());
 
         mDateButton = v.findViewById(R.id.date_picker_btn);
-//        mDateButton.setEnabled(true);
 
         mIsSeriousCrime = v.findViewById(R.id.serious_crime_box);
-//        mIsSeriousCrime.setChecked(mDetailViewModel.getSeriousFlag());
 
         mSolvedCheckBox = v.findViewById(R.id.crime_solved);
-//        mSolvedCheckBox.setChecked(mDetailViewModel.getSolvedFlag());
     }
 
     private void updateTitleUI() {
@@ -354,10 +308,7 @@ public class CrimeFragment extends Fragment {
 //        }
     }
 
-    private void updateDateUI() {
-//        mDateButton.setText(mDetailViewModel.getDateString());
 
-    }
 
     @Override
     public void onDetach() {
@@ -380,27 +331,7 @@ public class CrimeFragment extends Fragment {
 
         }
 
-//        Log.d(TAG, "onPause:  ADDING NEW CRIME? == " + mDetailViewModel.isAddingNewCrime());
 
-//        if (mDetailViewModel.isAddingNewCrime() && !mTitleField.getText().toString().isEmpty()) {
-//
-//            Log.d(TAG, "onPause: INSERTING CRIME TO DB ");
-//
-//            mDetailViewModel.addCrime();
-////            mAddingNewCrime=false;
-//
-//
-//            //FIXME once everything is working I wont need to check if that string is empty
-//        } else if (!mDetailViewModel.isAddingNewCrime() && !mTitleField.getText().toString().isEmpty()) {
-//
-//            //can also check inside DetailModelView if we made any changes
-//            //before pushing update to repo but for now just make sure title != null
-//
-//            Log.d(TAG, "onPause: UPDATING CRIME");
-//
-//            mDetailViewModel.updateCrime();
-//
-//        }
     }
 
     /**
