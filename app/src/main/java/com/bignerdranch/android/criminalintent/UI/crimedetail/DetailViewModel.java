@@ -356,22 +356,6 @@ public class DetailViewModel extends ViewModel {
 
 
 
-//    private void crime_to_ObservableFields(Crime crime) {
-//        if (crime == null) {
-//            Log.d(TAG, "crime_to_ObservableFields: got null crime");
-//            return;
-//        }
-//
-//        mCrime.setDate(crime.getDate());
-//        mCrime.setTitle(crime.getTitle());
-//        mCrime.setID(crime.getID());
-//        mCrime.setSerious(crime.isSeriousCrime());
-//        mCrime.setSolved(crime.isSolved());
-//
-//
-//    }
-
-
     public void setTitle(String title) {
 
 
@@ -418,52 +402,52 @@ public class DetailViewModel extends ViewModel {
     }
 
 
-    public void injectNextID(UUID uuid) {
-        mUUID = uuid;
-
-        // if we are injecting the next ID to be paged then can't possibly be adding new crime
-        mAddingNewCrime = false;
-
-
-        mDataSource.getForID(mUUID)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new SingleObserver<CrimeEntity>() {
-                    @Override
-                    public void onSubscribe(final Disposable d) {
-
-                        Log.d(TAG, "onSubscribe: attempting to fetch crime ID: " + mUUID);
-                    }
-
-                    @Override
-                    public void onSuccess(final CrimeEntity crimeEntity) {
-
-                        Log.d(TAG, "onSuccess: sucessfully fetched crime from repo: " + crimeEntity);
-//                        crime_to_ObservableFields(crimeEntity);
-
-
-                        backingEntity = crimeEntity;
-                        initObservableFields(crimeEntity);
-
-
-                        mIsLoading.set(false);
-
-//                        mAddingNewCrime = false;
-                    }
-
-                    @Override
-                    public void onError(final Throwable e) {
-
-                        // FIXME this is probably a true error if we end up here
-                        // b/c we either received the HEADER ID or a valid entity's ID
-                        // and if header then we don't even attempt to query repo
-
-
-                        Log.d(TAG, "onError: failed to fetch crime from repo with ID: " + mUUID, e);
-//                        mAddingNewCrime = true;
-                    }
-                });
-    }
+//    public void injectNextID(UUID uuid) {
+//        mUUID = uuid;
+//
+//        // if we are injecting the next ID to be paged then can't possibly be adding new crime
+//        mAddingNewCrime = false;
+//
+//
+//        mDataSource.getForID(mUUID)
+//                .subscribeOn(Schedulers.io())
+//                .observeOn(AndroidSchedulers.mainThread())
+//                .subscribe(new SingleObserver<CrimeEntity>() {
+//                    @Override
+//                    public void onSubscribe(final Disposable d) {
+//
+//                        Log.d(TAG, "onSubscribe: attempting to fetch crime ID: " + mUUID);
+//                    }
+//
+//                    @Override
+//                    public void onSuccess(final CrimeEntity crimeEntity) {
+//
+//                        Log.d(TAG, "onSuccess: sucessfully fetched crime from repo: " + crimeEntity);
+////                        crime_to_ObservableFields(crimeEntity);
+//
+//
+//                        backingEntity = crimeEntity;
+//                        initObservableFields(crimeEntity);
+//
+//
+//                        mIsLoading.set(false);
+//
+////                        mAddingNewCrime = false;
+//                    }
+//
+//                    @Override
+//                    public void onError(final Throwable e) {
+//
+//                        // FIXME this is probably a true error if we end up here
+//                        // b/c we either received the HEADER ID or a valid entity's ID
+//                        // and if header then we don't even attempt to query repo
+//
+//
+//                        Log.d(TAG, "onError: failed to fetch crime from repo with ID: " + mUUID, e);
+////                        mAddingNewCrime = true;
+//                    }
+//                });
+//    }
 
     /**
      * this methods act on the state of the viewModel so the crime
@@ -503,7 +487,7 @@ public class DetailViewModel extends ViewModel {
 
     public void addCrime() {
 
-        Log.d(TAG, "addCrime: inserting new crime in repo\n" + backingEntity.toString());
+        Log.d(TAG, "addCrime: attempting insert new crime in repo\n" + backingEntity.toString());
 
 
         mDataSource.insert(backingEntity)
@@ -530,6 +514,9 @@ public class DetailViewModel extends ViewModel {
                         Log.d(TAG, "onError:  failed to add crime to Repo", e);
                         //FIXME if we failed to insert then we can update here
                         // a-la to Upserting
+
+                        Log.d(TAG, "onError: updating via upsert");
+                        updateCrime();
 
                     }
                 });
