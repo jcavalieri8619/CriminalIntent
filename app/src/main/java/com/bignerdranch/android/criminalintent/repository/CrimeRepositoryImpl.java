@@ -2,17 +2,19 @@ package com.bignerdranch.android.criminalintent.repository;
 
 import android.arch.lifecycle.LiveData;
 
-import com.bignerdranch.android.criminalintent.database.CrimeDAO;
+import com.bignerdranch.android.criminalintent.database.dao.CrimeDAO;
 import com.bignerdranch.android.criminalintent.database.entity.CrimeEntity;
 
 import java.util.List;
 import java.util.UUID;
 
 import io.reactivex.Completable;
+import io.reactivex.Single;
 
 public class CrimeRepositoryImpl implements CrimeRepository {
 
-    private static final String TAG = CrimeRepository.class.getSimpleName();
+    private static final String TAG = CrimeRepository.class.getSimpleName().concat("::JPC");
+
 
     final CrimeDAO mDAO;
 
@@ -25,7 +27,12 @@ public class CrimeRepositoryImpl implements CrimeRepository {
 
     @Override
     public LiveData<List<CrimeEntity>> getAllCrimes() {
-        return mDAO.getAll();
+        return mDAO.loadAll();
+    }
+
+    @Override
+    public List<CrimeEntity> getForIDs(final UUID... crimeIDs) {
+        return mDAO.loadAllForIDs(crimeIDs);
     }
 
     @Override
@@ -34,13 +41,17 @@ public class CrimeRepositoryImpl implements CrimeRepository {
     }
 
     @Override
-    public LiveData<CrimeEntity> getByUUID(final UUID crime_uuid) {
-        return mDAO.findByUUID(UUID.randomUUID());
+    public Single<CrimeEntity> getForID(final UUID crime_uuid) {
+        return mDAO.loadForID(crime_uuid);
+
     }
 
     @Override
-    public LiveData<CrimeEntity> getByTitle(final String title) {
-        return mDAO.findByTitle(title);
+    public Single<CrimeEntity> getForTitle(final String title) {
+        return  mDAO.loadForTitle(title);
+
+
+
     }
 
     @Override
@@ -49,11 +60,13 @@ public class CrimeRepositoryImpl implements CrimeRepository {
     }
 
     @Override
-    public Completable insert(final CrimeEntity... crimes) {
-        return Completable.fromAction(() -> {
-            mDAO.insert(crimes);
+    public Single<CrimeEntity> getHeadRow() {
+        return mDAO.loadHeaderRow();
+    }
 
-        });
+    @Override
+    public Completable insert(final CrimeEntity... crimes) {
+        return Completable.fromAction(() -> mDAO.insert(crimes));
     }
 
 
@@ -64,8 +77,8 @@ public class CrimeRepositoryImpl implements CrimeRepository {
     }
 
     @Override
-    public Completable update(final CrimeEntity... crimes) {
-        return Completable.fromAction(() -> mDAO.update(crimes));
+    public Completable update(final CrimeEntity crime) {
+        return Completable.fromAction(() -> mDAO.update(crime));
     }
 
 }

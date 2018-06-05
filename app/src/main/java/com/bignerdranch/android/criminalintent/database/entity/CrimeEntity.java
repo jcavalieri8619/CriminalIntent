@@ -4,13 +4,18 @@ import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.PrimaryKey;
+import android.icu.text.DateFormat;
+import android.icu.text.SimpleDateFormat;
+import android.support.annotation.NonNull;
 import android.util.Log;
 
 
-import com.bignerdranch.android.criminalintent.UI.CrimeFields;
 import com.bignerdranch.android.criminalintent.model.Crime;
 
+import java.text.ParseException;
 import java.util.Date;
+import java.util.Locale;
+import java.util.Objects;
 import java.util.UUID;
 
 
@@ -21,10 +26,9 @@ public class CrimeEntity implements Crime{
     private static final String TAG = CrimeEntity.class.getSimpleName();
 
 
-    @PrimaryKey(autoGenerate = true)
-    public long _DB_ID;
 
-
+    @NonNull
+    @PrimaryKey()
     @ColumnInfo(name = "uuid_column")
     private UUID mID;
 
@@ -45,25 +49,14 @@ public class CrimeEntity implements Crime{
 
 
     public CrimeEntity() {
-        Log.d(TAG, "CrimeEntity: default ctor");
-
         mID = UUID.randomUUID();
         mDate = new Date();
         mSeriousCrime=false;
-        mSeriousCrime=false;
-    }
-
-    public CrimeEntity(CrimeFields fields) {
-        this();
-
-        Log.d(TAG, "CrimeEntity: fields CTOR");
-
-        setDate(fields.getDate());
-        setTitle(fields.getTitle());
-        setSeriousCrime(fields.isSeriousCrime());
-        setSolved(fields.isSolved());
+        mSolved = false;
 
     }
+
+
 
     public UUID getID() {
         return mID;
@@ -104,5 +97,34 @@ public class CrimeEntity implements Crime{
 
     public void setSeriousCrime(final boolean seriousCrime) {
         mSeriousCrime = seriousCrime;
+    }
+
+    @Override
+    public String toString() {
+        return "CrimeEntity{" +
+                "  mID=" + mID +
+                ", mTitle='" + mTitle + '\'' +
+                ", mDate=" + mDate +
+                ", mSolved=" + mSolved +
+                ", mSeriousCrime=" + mSeriousCrime +
+                '}';
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) return true;
+        if (!(o instanceof CrimeEntity)) return false;
+        final CrimeEntity that = (CrimeEntity) o;
+        return isSolved() == that.isSolved() &&
+                isSeriousCrime() == that.isSeriousCrime() &&
+                Objects.equals(getID(), that.getID()) &&
+                Objects.equals(getTitle(), that.getTitle()) &&
+                Objects.equals(getDate(), that.getDate());
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(getID(), getTitle(), getDate(), isSolved(), isSeriousCrime());
     }
 }

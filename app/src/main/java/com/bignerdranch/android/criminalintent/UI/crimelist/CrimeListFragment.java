@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -23,51 +24,25 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bignerdranch.android.criminalintent.HeaderGenerator;
 import com.bignerdranch.android.criminalintent.Injection;
 import com.bignerdranch.android.criminalintent.R;
 import com.bignerdranch.android.criminalintent.UI.ViewModelFactory;
-import com.bignerdranch.android.criminalintent.UI.cimedetail.CrimePagerActivity;
+import com.bignerdranch.android.criminalintent.UI.crimedetail.CrimePagerActivity;
 import com.bignerdranch.android.criminalintent.database.entity.CrimeEntity;
+import com.bignerdranch.android.criminalintent.model.Crime;
+import com.bignerdranch.android.criminalintent.repository.CrimeRepository;
 
 import java.util.ArrayList;
 import java.util.List;
 
 
-/**
- * A simple {link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {link CrimeListFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {link CrimeListFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class CrimeListFragment extends Fragment {
 
-    private static final String TAG = CrimeListFragment.class.getSimpleName();
+    private static final String TAG = CrimeListFragment.class.getSimpleName().concat("::JPC");
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_SUBTITLE_VISIBLE = "SUBTITLE_VISIBLE";
-
-    private static final String ARG_PARAM1 = "param1";
-
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private boolean mIsSubtitleVisible=false;
-
-
-    private String mParam1;
-
-    private String mParam2;
 
     private OnFragmentInteractionListener mListener;
-
-
-    /**
-     * BELOW ARE MY MEMBERS
-     */
-
 
 
     private RecyclerView mRecyclerView;
@@ -76,103 +51,93 @@ public class CrimeListFragment extends Fragment {
 
     private ViewModelFactory mViewModelFactory;
     private ListViewModel mListViewModel;
+    private ItemTouchHelper.SimpleCallback mSimpleItemTouchCallback;
 
     public CrimeListFragment() {
         // Required empty public constructor
     }
 
     /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
+     * Called when the fragment's activity has been created and this
+     * fragment's view hierarchy instantiated.  It can be used to do final
+     * initialization once these pieces are in place, such as retrieving
+     * views or restoring state.  It is also useful for fragments that use
+     * {@link #setRetainInstance(boolean)} to retain their instance,
+     * as this callback tells the fragment when it is fully associated with
+     * the new activity instance.  This is called after {@link #onCreateView}
+     * and before {link #onViewStateRestored(Bundle)}.
      *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment CrimeListFragment.
+     * @param savedInstanceState If the fragment is being re-created from
+     *                           a previous saved state, this is the state.
      */
-    // TODO: Rename and change types and number of parameters
-    public static CrimeListFragment newInstance(String param1, String param2) {
-        Log.d(TAG, "newInstance: ");
-
-        CrimeListFragment fragment = new CrimeListFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-
     @Override
-    public void onCreateOptionsMenu(final Menu menu, final MenuInflater inflater) {
-        super.onCreateOptionsMenu(menu, inflater);
-
-        Log.d(TAG, "onCreateOptionsMenu: ");
-
-        inflater.inflate(R.menu.fragment_crime_list, menu);
-
-        MenuItem subtitleItem = menu.findItem(R.id.show_subtitle);
-
-        if (mIsSubtitleVisible) {
-
-            subtitleItem.setTitle(R.string.hide_subtitle);
-
-        } else {
-            subtitleItem.setTitle(R.string.show_subtitle);
-        }
+    public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        Log.d(TAG, "onActivityCreated: lifecycle");
 
     }
-
-    @Override
-    public boolean onOptionsItemSelected(final MenuItem item) {
-
-        Log.d(TAG, "onOptionsItemSelected: ");
-
-        switch (item.getItemId()) {
-            case R.id.new_crime:
-
-                Log.d(TAG, "onOptionsItemSelected: creating CrimePagerActivity");
-
-
-                Intent intent = CrimePagerActivity.newIntent(getActivity(), null);
-                startActivity(intent);
-                return true;
-
-            case R.id.show_subtitle:
-                mIsSubtitleVisible = !mIsSubtitleVisible;
-                getActivity().invalidateOptionsMenu();
-
-                updateSubtitle();
-
-                return true;
-            default:
-
-                return super.onOptionsItemSelected(item);
-
-        }
-
-
-
-
-    }
-
-
 
     /**
-     * Called when the fragment is visible to the user and actively running.
-     * This is generally
-     * tied to { Activity#onResume() Activity.onResume} of the containing
+     * Called when the Fragment is visible to the user.  This is generally
+     * tied to {link Activity#onStart() Activity.onStart} of the containing
      * Activity's lifecycle.
      */
     @Override
-    public void onResume() {
-        super.onResume();
-        updateUI();
+    public void onStart() {
+        super.onStart();
+        Log.d(TAG, "onStart: lifecycle");
 
+    }
+
+    /**
+     * Called when the Fragment is no longer resumed.  This is generally
+     * tied to {link Activity#onPause() Activity.onPause} of the containing
+     * Activity's lifecycle.
+     */
+    @Override
+    public void onPause() {
+        super.onPause();
+        Log.d(TAG, "onPause: lifecycle");
+
+    }
+
+    /**
+     * Called when the Fragment is no longer started.  This is generally
+     * tied to {link Activity#onStop() Activity.onStop} of the containing
+     * Activity's lifecycle.
+     */
+    @Override
+    public void onStop() {
+        super.onStop();
+        Log.d(TAG, "onStop: lifecycle");
+
+    }
+
+    /**
+     * Called when the fragment is no longer in use.  This is called
+     * after {@link #onStop()} and before {@link #onDetach()}.
+     */
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.d(TAG, "onDestroy: lifecycle");
+
+    }
+
+    public static CrimeListFragment newInstance() {
+        Log.d(TAG, "NewInstance: ");
+
+        CrimeListFragment fragment = new CrimeListFragment();
+        Bundle args = new Bundle();
+        fragment.setArguments(args);
+        return fragment;
     }
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+        Log.d(TAG, "onAttach: lifecycle");
+
         if (context instanceof OnFragmentInteractionListener) {
             mListener = (OnFragmentInteractionListener) context;
         } else {
@@ -184,58 +149,183 @@ public class CrimeListFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-            mIsSubtitleVisible = getArguments().getBoolean(ARG_SUBTITLE_VISIBLE);
+        Log.d(TAG, "onCreate: lifecycle");
 
-        }
-
-        if (savedInstanceState != null) {
-            mIsSubtitleVisible = savedInstanceState.getBoolean(ARG_SUBTITLE_VISIBLE);
-
-        }
 
         setHasOptionsMenu(true);
-        mCrimeAdapter = new CrimeAdapter();
 
+
+        mCrimeAdapter = new CrimeAdapter();
 
 
         mViewModelFactory = Injection.provideViewModelFactory(getActivity());
         mListViewModel = ViewModelProviders.of(getActivity(), mViewModelFactory).get(ListViewModel.class);
 
-        mListViewModel.getAllCrimes().observe(this, crimes -> {
-            mCrimeAdapter.setItems(crimes);
-
-            updateUI();
-
-        });
+        subscribeToModel();
 
     }
 
-    /**
-     * Called to ask the fragment to save its current dynamic state, so it
-     * can later be reconstructed in a new instance of its process is
-     * restarted.  If a new instance of the fragment later needs to be
-     * created, the data you place in the Bundle here will be available
-     * in the Bundle given to {@link #onCreate(Bundle)},
-     * {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}, and
-     * {@link #onActivityCreated(Bundle)}.
-     * <p>
-     * <p>This corresponds to {link Activity#onSaveInstanceState(Bundle)
-     * Activity.onSaveInstanceState(Bundle)} and most of the discussion there
-     * applies here as well.  Note however: <em>this method may be called
-     * at any time before {@link #onDestroy()}</em>.  There are many situations
-     * where a fragment may be mostly torn down (such as when placed on the
-     * back stack with no UI showing), but its state will not be saved until
-     * its owning activity actually needs to save its state.
-     *
-     * @param outState Bundle in which to place your saved state.
-     */
+
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+
+        Log.d(TAG, "onCreateView: lifecycle");
+
+        // Inflate the layout for this fragment
+        View v = inflater.inflate(R.layout.fragment_crime_list, container, false);
+
+        setupListViews(v);
+        setupRecyclerView();
+
+        return v;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.d(TAG, "onResume: lifecycle");
+
+        updateUI();
+
+    }
+
     @Override
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putBoolean(ARG_SUBTITLE_VISIBLE, mIsSubtitleVisible);
+
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        Log.d(TAG, "onDetach: lifecycle");
+
+        mListener = null;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(final Menu menu, final MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+
+
+        inflater.inflate(R.menu.fragment_crime_list, menu);
+
+        setupMenuViews(menu);
+
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(final MenuItem item) {
+
+
+        switch (item.getItemId()) {
+            case R.id.new_crime:
+
+                Log.d(TAG, "onOptionsItemSelected: creating CrimePagerActivity");
+
+
+                Intent intent = CrimePagerActivity.newIntentForNewCrime(getActivity());
+                startActivity(intent);
+                return true;
+
+            case R.id.show_subtitle:
+                mListViewModel.negateSubtitleVisiblity();
+
+                getActivity().invalidateOptionsMenu();
+
+                updateSubtitle();
+
+                return true;
+            default:
+
+                return super.onOptionsItemSelected(item);
+
+        }
+
+    }
+
+
+    private void subscribeToModel() {
+        mListViewModel.getAllCrimes().observe(this, crimes -> {
+            if (crimes != null && crimes.size() !=0) {
+
+                Log.d(TAG, "subscribeToModel: received crimes of size: " + crimes.size());
+                mCrimeAdapter.setItems(crimes);
+
+                updateUI();
+
+                CrimeRepository dataSource = Injection.provideCrimeRepository(getContext());
+
+                //TODO remove this testing code
+//                dataSource.getForID(crimes.get(0).getID())
+//                        .subscribeOn(Schedulers.io())
+//                        .observeOn(AndroidSchedulers.mainThread())
+//                        .subscribe(new SingleObserver<CrimeEntity>() {
+//                            @Override
+//                            public void onSubscribe(final Disposable d) {
+//
+//                                Log.d(TAG, "onSubscribe: JPC TESTING");
+//
+//                            }
+//
+//                            @Override
+//                            public void onSuccess(final CrimeEntity entity) {
+//
+//                                Log.d(TAG, "onSuccess: JPC TESTING retrieved entity: "+entity);
+//
+//                            }
+//
+//                            @Override
+//                            public void onError(final Throwable e) {
+//
+//                                Log.d(TAG, "onError: JPC TESTING", e);
+//
+//                            }
+//                        });
+
+
+            } else {
+
+                Log.d(TAG, "subscribeToModel: received crimes NULL list: ");
+
+            }
+
+        });
+    }
+
+
+    private void setupMenuViews(final Menu menu) {
+        MenuItem subtitleItem = menu.findItem(R.id.show_subtitle);
+
+        updateMenu_UI(subtitleItem);
+    }
+
+    private void updateMenu_UI(final MenuItem subtitleItem) {
+        if (mListViewModel.isSubtitleVisible()) {
+
+            subtitleItem.setTitle(R.string.hide_subtitle);
+
+        } else {
+            subtitleItem.setTitle(R.string.show_subtitle);
+        }
+    }
+
+
+    private void updateSubtitle() {
+
+        int size = mCrimeAdapter.getItemCount();
+
+
+        String subtitle = null;
+
+        if (mListViewModel.isSubtitleVisible()) {
+
+            subtitle = getResources().getQuantityString(R.plurals.subtitle_plurals, size, size);
+        }
+
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setSubtitle(subtitle);
+
 
     }
 
@@ -245,119 +335,62 @@ public class CrimeListFragment extends Fragment {
         updateSubtitle();
 
 
-
     }
 
-    private void updateSubtitle() {
-//        int size = mListViewModel.currCrimesList.size();
-
-        int size = mCrimeAdapter.getItemCount();
-
-
-        String subtitle = getResources().getQuantityString(R.plurals.subtitle_plurals, size, size);
-
-        if (!mIsSubtitleVisible) {
-            subtitle = null;
-        }
-
-        ((AppCompatActivity) getActivity()).getSupportActionBar().setSubtitle(subtitle);
-
-
-    }
-
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        View v = inflater.inflate(R.layout.fragment_crime_list, container, false);
-
+    private void setupListViews(final View v) {
         mRecyclerView = v.findViewById(R.id.crime_recycler_view);
+    }
+
+    private void setupRecyclerView() {
         mRecyclerView.setAdapter(mCrimeAdapter);
 
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-        ItemTouchHelper.SimpleCallback simpleItemTouchCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT | ItemTouchHelper.DOWN | ItemTouchHelper.UP) {
+        setUpCallbacks();
+
+
+        ItemTouchHelper touchHelper = new ItemTouchHelper(mSimpleItemTouchCallback);
+
+        touchHelper.attachToRecyclerView(mRecyclerView);
+    }
+
+    private void setUpCallbacks() {
+        mSimpleItemTouchCallback = new ItemTouchHelper.SimpleCallback(0,
+                ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT |
+                        ItemTouchHelper.DOWN | ItemTouchHelper.UP) {
 
             @Override
             public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
-                Toast.makeText(getActivity(), "on Move", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), "onMove not implemented", Toast.LENGTH_SHORT).show();
                 return false;
             }
 
             @Override
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
-                Toast.makeText(getActivity(), "on Swiped ", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), "Deleted Crime", Toast.LENGTH_SHORT).show();
                 //Remove swiped item from list and notify the RecyclerView
                 final int position = viewHolder.getAdapterPosition();
-                mListViewModel.deleteCrime(((BaseCrimeHolder) viewHolder).getCrimeEntity());
+                mListViewModel.deleteCrime(((BaseCrimeHolder) viewHolder).getCrimeInstance());
                 mCrimeAdapter.notifyItemRemoved(position);
             }
         };
-
-
-        ItemTouchHelper touchHelper = new ItemTouchHelper(simpleItemTouchCallback);
-
-        touchHelper.attachToRecyclerView(mRecyclerView);
-
-
-        updateUI();
-        return v;
     }
 
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
-    }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
     public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
 
 
+    public class CrimeAdapter extends RecyclerView.Adapter<BaseCrimeHolder> {
 
-    private class CrimeAdapter extends RecyclerView.Adapter<BaseCrimeHolder> {
-
-        private List<CrimeEntity> mItems = new ArrayList<>();
-
-
-
+        private final String TAG_CA = CrimeAdapter.class.getSimpleName().concat("::JPC");
+        private List<? extends Crime> mItems = new ArrayList<>();
 
 
         CrimeAdapter() {
 
         }
-
-        /**
-         * Return the view type of the item at <code>position</code> for the purposes
-         * of view recycling.
-         * <p>
-         * <p>The default implementation of this method returns 0, making the assumption of
-         * a single view type for the adapter. Unlike ListView adapters, types need not
-         * be contiguous. Consider using id resources to uniquely identify item view types.
-         *
-         * @param position position to query
-         * @return integer value identifying the type of the view needed to represent the item at
-         * <code>position</code>. Type codes need not be contiguous.
-         */
-        @Override
-        public int getItemViewType(final int position) {
-
-            return mItems.get(position).isSeriousCrime() ? 1 : 0;
-        }
-
-
 
         /**
          * Called when RecyclerView needs a new ViewHolder of the given type to represent
@@ -382,20 +415,20 @@ public class CrimeListFragment extends Fragment {
         @NonNull
         @Override
         public BaseCrimeHolder onCreateViewHolder(@NonNull final ViewGroup parent, final int viewType) {
-            final int PETTY_CRIME = 0;
+            final int CRIME = 0;
             final int SERIOUS_CRIME = 1;
 
-            BaseCrimeHolder VH ;
+            BaseCrimeHolder VH;
             switch (viewType) {
-                case PETTY_CRIME:
-                    VH=new CrimeHolder(getLayoutInflater(), parent);
-                    break;
+
                 case SERIOUS_CRIME:
-                    VH= new SeriousCrimeHolder(getLayoutInflater(), parent);
+                    VH = new SeriousCrimeHolder(getLayoutInflater(), parent);
                     break;
 
-                    default:
-                        VH = null;
+                default:
+                case CRIME:
+                    VH = new CrimeHolder(getLayoutInflater(), parent);
+                    break;
 
 
             }
@@ -430,13 +463,24 @@ public class CrimeListFragment extends Fragment {
 
         }
 
-
-
         /**
-         * Returns the total number of items in the data set held by the adapter.
+         * Return the view type of the item at <code>position</code> for the purposes
+         * of view recycling.
+         * <p>
+         * <p>The default implementation of this method returns 0, making the assumption of
+         * a single view type for the adapter. Unlike ListView adapters, types need not
+         * be contiguous. Consider using id resources to uniquely identify item view types.
          *
-         * @return The total number of items in this adapter.
+         * @param position position to query
+         * @return integer value identifying the type of the view needed to represent the item at
+         * <code>position</code>. Type codes need not be contiguous.
          */
+        @Override
+        public int getItemViewType(final int position) {
+
+            return mItems.get(position).isSeriousCrime() ? 1 : 0;
+        }
+
         @Override
         public int getItemCount() {
             return mItems.size();
@@ -453,42 +497,34 @@ public class CrimeListFragment extends Fragment {
     }
 
 
-    private abstract class BaseCrimeHolder extends RecyclerView.ViewHolder{
+    private abstract class BaseCrimeHolder extends RecyclerView.ViewHolder {
 
 
-
+        final String TAG_VH = BaseCrimeHolder.class.getSimpleName().concat("::JPC");
 
         public BaseCrimeHolder(final View itemView) {
             super(itemView);
 
 
-
         }
 
-        abstract CrimeEntity getCrimeEntity();
+        abstract Crime getCrimeInstance();
 
-        abstract void bind(CrimeEntity crime);
+        abstract void bind(Crime crime);
     }
 
-    private class CrimeHolder extends BaseCrimeHolder implements View.OnClickListener{
+    private class CrimeHolder extends BaseCrimeHolder implements View.OnClickListener {
+
 
         TextView mCrimeTitle;
         TextView mCrimeDate;
 
         ImageView mCrimeSolved;
 
-        CrimeEntity mCrime;
 
 
+        Crime mCrime;
 
-        void bind(CrimeEntity crime) {
-            mCrime = crime;
-            mCrimeDate.setText(crime.getFormattedDate());
-
-            mCrimeTitle.setText(crime.getTitle());
-            mCrimeSolved.setVisibility(mCrime.isSolved() ? View.VISIBLE : View.GONE);
-
-        }
 
         CrimeHolder(LayoutInflater inflater, ViewGroup parent) {
 
@@ -503,57 +539,55 @@ public class CrimeListFragment extends Fragment {
 
         }
 
+        void bind(Crime crime) {
+            if (crime.getID().equals(HeaderGenerator.getHeaderEntity().getID())) {
+                super.itemView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0));
+                super.itemView.setVisibility(View.GONE);
+                return;
+            }
+
+            mCrime = crime;
+            mCrimeDate.setText(Crime.crimeDateToString(crime.getDate()));
+
+            mCrimeTitle.setText(crime.getTitle());
+            mCrimeSolved.setVisibility(mCrime.isSolved() ? View.VISIBLE : View.GONE);
+
+        }
+
         @Override
-        CrimeEntity getCrimeEntity() {
+        Crime getCrimeInstance() {
             return mCrime;
         }
 
-        /**
-         * Called when a view has been clicked.
-         *
-         * @param v The view that was clicked.
-         */
         @Override
         public void onClick(final View v) {
             // parameter View v is same view stored in this viewholder
             // so v == super.itemView
 
 
-            Intent intent = CrimePagerActivity.newIntent(getActivity(), mCrime.getID());
+            Intent intent = CrimePagerActivity.newIntentForUUID(getActivity(), mCrime.getID());
+            Log.d(TAG_VH, "onClick: creating PagerActivity for UUID "
+                    + mCrime.getID().toString());
 
 
             startActivity(intent);
 
 
-
         }
+
+
     }
 
 
-    private class SeriousCrimeHolder extends BaseCrimeHolder implements View.OnClickListener{
+    private class SeriousCrimeHolder extends BaseCrimeHolder implements View.OnClickListener {
 
         TextView mCrimeTitle;
         TextView mCrimeDate;
 
         ImageView mCrimeSolved;
 
-        CrimeEntity mCrime;
+        Crime mCrime;
 
-
-
-        void bind(CrimeEntity crime) {
-            mCrime = crime;
-            mCrimeDate.setText(crime.getFormattedDate());
-            mCrimeTitle.setText(crime.getTitle());
-
-            mCrimeSolved.setVisibility(mCrime.isSolved() ? View.VISIBLE : View.GONE);
-
-
-        }
-        @Override
-        CrimeEntity getCrimeEntity() {
-            return mCrime;
-        }
 
         SeriousCrimeHolder(LayoutInflater inflater, ViewGroup parent) {
 
@@ -569,15 +603,27 @@ public class CrimeListFragment extends Fragment {
 
         }
 
-        /**
-         * Called when a view has been clicked.
-         *
-         * @param v The view that was clicked.
-         */
+        void bind(Crime crime) {
+            mCrime = crime;
+            mCrimeDate.setText(Crime.crimeDateToString(crime.getDate()));
+            mCrimeTitle.setText(crime.getTitle());
+
+            mCrimeSolved.setVisibility(mCrime.isSolved() ? View.VISIBLE : View.GONE);
+
+
+        }
+
+        @Override
+        Crime getCrimeInstance() {
+            return mCrime;
+        }
+
+
         @Override
         public void onClick(final View v) {
-            Intent intent = CrimePagerActivity.newIntent(getActivity(), mCrime.getID());
-
+            Intent intent = CrimePagerActivity.newIntentForUUID(getActivity(), mCrime.getID());
+            Log.d(TAG_VH, "onClick: creating PagerActivity for UUID "
+                    + mCrime.getID().toString());
 
             startActivity(intent);
         }

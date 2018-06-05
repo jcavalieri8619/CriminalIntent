@@ -5,13 +5,18 @@ import android.arch.lifecycle.MutableLiveData;
 import android.util.Log;
 
 import com.bignerdranch.android.criminalintent.database.entity.CrimeEntity;
+import com.bignerdranch.android.criminalintent.model.Crime;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 import io.reactivex.Completable;
+import io.reactivex.Maybe;
+import io.reactivex.Single;
 
 public class MockCrimeRepositoryImpl implements CrimeRepository {
 
@@ -31,6 +36,9 @@ public class MockCrimeRepositoryImpl implements CrimeRepository {
         for (int i = 0; i < 10; i++) {
             CrimeEntity crime = new CrimeEntity();
 
+
+            crime.setID(UUID.randomUUID());
+            crime.setDate(new Date());
             crime.setTitle("CrimeEntity: " + i);
             crime.setSolved(i % 2 == 0);
 
@@ -51,17 +59,22 @@ public class MockCrimeRepositoryImpl implements CrimeRepository {
     }
 
     @Override
+    public List<CrimeEntity> getForIDs(final UUID... crimeIDs) {
+        return null;
+    }
+
+    @Override
     public LiveData<List<CrimeEntity>> getBySerious(final boolean isSerious) {
         return null;
     }
 
     @Override
-    public LiveData<CrimeEntity> getByUUID(final UUID crime_uuid) {
+    public Single<CrimeEntity> getForID(final UUID crime_uuid) {
         return null;
     }
 
     @Override
-    public LiveData<CrimeEntity> getByTitle(final String title) {
+    public Single<CrimeEntity> getForTitle(final String title) {
         return null;
     }
 
@@ -71,12 +84,23 @@ public class MockCrimeRepositoryImpl implements CrimeRepository {
     }
 
     @Override
+    public Single<CrimeEntity> getHeadRow() {
+        return null;
+    }
+
+    @Override
     public Completable insert(final CrimeEntity... crimes) {
         return Completable.fromAction(() ->
                 {
                     Log.d(TAG, "insert: ");
 
-                    mCrimeList.addAll(Arrays.asList(crimes));
+//                    mCrimeList.addAll(Arrays.asList(() crimes));
+                    Arrays.stream(crimes).forEach(new Consumer<Crime>() {
+                        @Override
+                        public void accept(final Crime crime) {
+                            mCrimeList.add((CrimeEntity) crime);
+                        }
+                    });
                     mListMutableLiveData.postValue(mCrimeList);
 
                 }
@@ -91,7 +115,7 @@ public class MockCrimeRepositoryImpl implements CrimeRepository {
     }
 
     @Override
-    public Completable update(final CrimeEntity... crimes) {
+    public Completable update(final CrimeEntity crime) {
         return null;
     }
 }

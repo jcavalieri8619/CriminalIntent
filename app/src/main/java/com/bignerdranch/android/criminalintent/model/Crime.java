@@ -11,24 +11,8 @@ import java.util.UUID;
 
 public interface Crime {
 
-    DateFormat crimeDateFormat = new SimpleDateFormat("MMMM d, yyyy  h:m:s a", Locale.ENGLISH);
 
-    default String getFormattedDate() {
-        return crimeDateFormat.format(getDate());
-    }
 
-    default Date SetDateFromFromString(String datestring) {
-        Date date=null;
-        try {
-            date = crimeDateFormat.parse(datestring);
-        } catch (ParseException e) {
-            Log.e("CRIMINALINTENT:CRIME_ENTITY",
-                    "SetDateFromFromString: ERROR CONVERTING STRING INTO DATE");
-
-        }
-
-        return date;
-    }
 
     UUID getID();
 
@@ -49,6 +33,35 @@ public interface Crime {
     boolean isSeriousCrime();
 
     void setSeriousCrime(final boolean seriousCrime);
+
+
+
+
+
+    static String crimeDateToString(Date date) {
+
+
+        final DateFormat sCrimeDateFormat = new SimpleDateFormat("MMMM d, yyyy  h:mm:ss a", Locale.ENGLISH);
+
+        return sCrimeDateFormat.format(date);
+    }
+
+    static Date crimeDateFromString(String datestring) {
+
+        final DateFormat sCrimeDateFormat = new SimpleDateFormat("MMMM d, yyyy  h:mm:ss a", Locale.ENGLISH);
+
+
+        Date date=null;
+        try {
+            date = sCrimeDateFormat.parse(datestring);
+        } catch (ParseException e) {
+            e.printStackTrace();
+            date = new Date();
+        }
+
+        return date;
+    }
+
 
 
 }

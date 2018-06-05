@@ -73,7 +73,6 @@ public class DatePickerFragment extends DialogFragment {
      *                           or null if this is a freshly created Fragment.
      * @return Return a new Dialog instance to be displayed by the Fragment.
      */
-    @SuppressLint("NewApi")
     @NonNull
     @Override
     public Dialog onCreateDialog(final Bundle savedInstanceState) {

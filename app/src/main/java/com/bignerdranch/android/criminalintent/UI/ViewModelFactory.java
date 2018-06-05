@@ -3,7 +3,7 @@ package com.bignerdranch.android.criminalintent.UI;
 import android.arch.lifecycle.ViewModel;
 import android.support.annotation.NonNull;
 
-import com.bignerdranch.android.criminalintent.UI.cimedetail.DetailViewModel;
+import com.bignerdranch.android.criminalintent.UI.crimedetail.DetailPagerViewModel;
 import com.bignerdranch.android.criminalintent.UI.crimelist.ListViewModel;
 import com.bignerdranch.android.criminalintent.repository.CrimeRepository;
 
@@ -27,8 +27,8 @@ public class ViewModelFactory implements android.arch.lifecycle.ViewModelProvide
     public <T extends ViewModel> T create(@NonNull final Class<T> modelClass) {
         if (modelClass.isAssignableFrom(ListViewModel.class)) {
             return (T) new ListViewModel(mDataSource);
-        }else if (modelClass.isAssignableFrom(DetailViewModel.class)){
-            return (T) new DetailViewModel(mDataSource);
+        }else if (modelClass.isAssignableFrom(DetailPagerViewModel.class)){
+            return (T) new DetailPagerViewModel(mDataSource);
 
         }
 
