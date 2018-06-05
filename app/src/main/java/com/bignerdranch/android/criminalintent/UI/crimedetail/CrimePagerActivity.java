@@ -45,10 +45,6 @@ public class CrimePagerActivity extends AppCompatActivity implements CrimeFragme
 
     private DetailPagerViewModel mDetailPagerViewModel;
 
-    private DetailViewModel.Factory mDetailModelFactory;
-    private DetailViewModel mDetailViewModel;
-
-//    private boolean mAddingNewCrime;
 
 
     @Override
@@ -140,19 +136,6 @@ public class CrimePagerActivity extends AppCompatActivity implements CrimeFragme
 
         }
 
-
-        // THIS IS STILL VALID since its coming from listFrag so <DetailViewModel> is either
-        // injected with valid crime ID or HEADER ID
-
-        // if crime_ID extra received from listFrag is null --> we're adding new crime
-        // so just pass along HEADER ID and DetailViewModel will recognize HEADER ID and
-        // populate frag for adding new crime
-
-        //FIXME not sure if its necessary to instantiate DetailViewModel here
-//        mDetailModelFactory = Injection.provideDetailModelFactory(this,
-//                crime_ID == null ? HeaderGenerator.getHeaderEntity().getID() : crime_ID);
-//
-//        mDetailViewModel = ViewModelProviders.of(this, mDetailModelFactory).get(DetailViewModel.class);
 
 
     }
@@ -266,19 +249,14 @@ public class CrimePagerActivity extends AppCompatActivity implements CrimeFragme
         public Fragment getItem(int position) {
 
 
-            // this could be either a random ID from initEmptyPager or HEADER ID
+            // could be HEADER ID or
             // depending on how fast asynch DB queries return list<CrimeEntity> from Repo
             // OR it could be valid crime ID if mItems.size > 1 strictly
 
             UUID nextID = mItems.get(position).getID();
-            Fragment f = CrimeFragment.newInstanceForUUID(nextID);
-//            mDetailModelFactory = Injection.provideDetailModelFactory(CrimePagerActivity.this,
-//                    nextID);
-//
-//            mDetailViewModel = ViewModelProviders.of(CrimePagerActivity.this,
-//                    mDetailModelFactory).get(DetailViewModel.class);
 
-            return f;
+
+            return CrimeFragment.newInstanceForUUID(nextID);
 
         }
 
