@@ -370,30 +370,37 @@ public class CrimeFragment extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
-
-
         Log.d(TAG, "onPause: lifecycle");
-        Log.d(TAG, "onPause:  ADDING NEW CRIME? == " + mDetailViewModel.isAddingNewCrime());
 
-        if (mDetailViewModel.isAddingNewCrime() && !mTitleField.getText().toString().isEmpty()) {
+        Log.d(TAG, "onPause: upserting crime");
 
-            Log.d(TAG, "onPause: INSERTING CRIME TO DB ");
+        if (!mTitleField.getText().toString().isEmpty()) {
 
             mDetailViewModel.addCrime();
-//            mAddingNewCrime=false;
-
-
-            //FIXME once everything is working I wont need to check if that string is empty
-        } else if (!mDetailViewModel.isAddingNewCrime() && !mTitleField.getText().toString().isEmpty()) {
-
-            //can also check inside DetailModelView if we made any changes
-            //before pushing update to repo but for now just make sure title != null
-
-            Log.d(TAG, "onPause: UPDATING CRIME");
-
-            mDetailViewModel.updateCrime();
 
         }
+
+//        Log.d(TAG, "onPause:  ADDING NEW CRIME? == " + mDetailViewModel.isAddingNewCrime());
+
+//        if (mDetailViewModel.isAddingNewCrime() && !mTitleField.getText().toString().isEmpty()) {
+//
+//            Log.d(TAG, "onPause: INSERTING CRIME TO DB ");
+//
+//            mDetailViewModel.addCrime();
+////            mAddingNewCrime=false;
+//
+//
+//            //FIXME once everything is working I wont need to check if that string is empty
+//        } else if (!mDetailViewModel.isAddingNewCrime() && !mTitleField.getText().toString().isEmpty()) {
+//
+//            //can also check inside DetailModelView if we made any changes
+//            //before pushing update to repo but for now just make sure title != null
+//
+//            Log.d(TAG, "onPause: UPDATING CRIME");
+//
+//            mDetailViewModel.updateCrime();
+//
+//        }
     }
 
     /**
