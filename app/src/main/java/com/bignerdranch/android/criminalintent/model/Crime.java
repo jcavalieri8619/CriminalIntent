@@ -22,6 +22,11 @@ public interface Crime {
 
     void setTitle(final String title);
 
+    String getSuspect();
+
+    void setSuspect(final String suspect);
+
+
     Date getDate();
 
     void setDate(final Date date);
@@ -30,9 +35,9 @@ public interface Crime {
 
     void setSolved(final boolean solved);
 
-    boolean isSeriousCrime();
+    boolean isSerious();
 
-    void setSeriousCrime(final boolean seriousCrime);
+    void setSerious(final boolean seriousCrime);
 
 
 

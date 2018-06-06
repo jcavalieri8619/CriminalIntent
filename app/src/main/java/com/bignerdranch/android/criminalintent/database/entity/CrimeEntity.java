@@ -4,17 +4,12 @@ import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.PrimaryKey;
-import android.icu.text.DateFormat;
-import android.icu.text.SimpleDateFormat;
 import android.support.annotation.NonNull;
-import android.util.Log;
 
 
 import com.bignerdranch.android.criminalintent.model.Crime;
 
-import java.text.ParseException;
 import java.util.Date;
-import java.util.Locale;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -36,6 +31,9 @@ public class CrimeEntity implements Crime{
     @ColumnInfo(name = "title_column")
     private String mTitle;
 
+    @ColumnInfo(name = "suspect_column")
+    private String mSuspect;
+
     @ColumnInfo(name = "date_column")
     private Date mDate;
 
@@ -43,7 +41,7 @@ public class CrimeEntity implements Crime{
     private boolean mSolved;
 
     @ColumnInfo(name = "is_serious_column")
-    private boolean mSeriousCrime;
+    private boolean mSerious;
 
 
 
@@ -51,7 +49,7 @@ public class CrimeEntity implements Crime{
     public CrimeEntity() {
         mID = UUID.randomUUID();
         mDate = new Date();
-        mSeriousCrime=false;
+        mSerious=false;
         mSolved = false;
 
     }
@@ -74,6 +72,17 @@ public class CrimeEntity implements Crime{
         mTitle = title;
     }
 
+    @Override
+    public String getSuspect() {
+        return mSuspect;
+    }
+
+    @Override
+    public void setSuspect(final String suspect) {
+
+        mSuspect = suspect;
+    }
+
     public Date getDate() {
         return mDate;
     }
@@ -91,22 +100,23 @@ public class CrimeEntity implements Crime{
         mSolved = solved;
     }
 
-    public boolean isSeriousCrime() {
-        return mSeriousCrime;
+    public boolean isSerious() {
+        return mSerious;
     }
 
-    public void setSeriousCrime(final boolean seriousCrime) {
-        mSeriousCrime = seriousCrime;
+    public void setSerious(final boolean seriousCrime) {
+        mSerious = seriousCrime;
     }
 
     @Override
     public String toString() {
         return "CrimeEntity{" +
-                "  mID=" + mID +
+                "mID=" + mID +
                 ", mTitle='" + mTitle + '\'' +
+                ", mSuspect='" + mSuspect + '\'' +
                 ", mDate=" + mDate +
                 ", mSolved=" + mSolved +
-                ", mSeriousCrime=" + mSeriousCrime +
+                ", mSeriousCrime=" + mSerious +
                 '}';
     }
 
@@ -114,17 +124,18 @@ public class CrimeEntity implements Crime{
     public boolean equals(final Object o) {
         if (this == o) return true;
         if (!(o instanceof CrimeEntity)) return false;
-        final CrimeEntity that = (CrimeEntity) o;
-        return isSolved() == that.isSolved() &&
-                isSeriousCrime() == that.isSeriousCrime() &&
-                Objects.equals(getID(), that.getID()) &&
-                Objects.equals(getTitle(), that.getTitle()) &&
-                Objects.equals(getDate(), that.getDate());
+        final CrimeEntity entity = (CrimeEntity) o;
+        return isSolved() == entity.isSolved() &&
+                isSerious() == entity.isSerious() &&
+                Objects.equals(getID(), entity.getID()) &&
+                Objects.equals(getTitle(), entity.getTitle()) &&
+                Objects.equals(getSuspect(), entity.getSuspect()) &&
+                Objects.equals(getDate(), entity.getDate());
     }
 
     @Override
     public int hashCode() {
 
-        return Objects.hash(getID(), getTitle(), getDate(), isSolved(), isSeriousCrime());
+        return Objects.hash(getID(), getTitle(), getSuspect(), getDate(), isSolved(), isSerious());
     }
 }
