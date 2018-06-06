@@ -7,6 +7,12 @@
     <data>
 
 
+        <import type="com.bignerdranch.android.criminalintent.UI.ObservableCrime" />
+
+
+        <variable
+            name="observableCrime"
+            type="com.bignerdranch.android.criminalintent.UI.ObservableCrime" />
 
         <variable
             name="crimeTitleBinding"
@@ -82,7 +88,7 @@
                 android:layout_height="wrap_content"
                 android:hint="@string/crime_title_hint"
                 android:inputType="text|textCapWords|textAutoCorrect"
-                android:text="@{crimeTitleBinding}" />
+                android:text="@{observableCrime.title}" />
 
 
             <TextView
@@ -96,7 +102,7 @@
                 android:id="@+id/date_picker_btn"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@{crimeDateBinding}" />
+                android:text="@{observableCrime.date.toString()}" />
 
             <android.support.constraint.ConstraintLayout
                 android:id="@+id/linearLayout"
@@ -107,7 +113,7 @@
                     android:id="@+id/crime_solved"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:checked="@{crimeSolvedBinding}"
+                    android:checked="@{observableCrime.solved}"
                     android:text="@string/crime_solved_label"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/serious_crime_box"
@@ -120,7 +126,7 @@
                     android:id="@+id/serious_crime_box"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:checked="@{crimeSeriousBinding}"
+                    android:checked="@{observableCrime.serious}"
                     android:layoutDirection="inherit"
                     android:text="Serious"
                     android:textDirection="inherit"
