@@ -49,7 +49,6 @@ public class CrimeListFragment extends Fragment {
 
     private CrimeAdapter mCrimeAdapter;
 
-    private ViewModelFactory mViewModelFactory;
     private ListViewModel mListViewModel;
     private ItemTouchHelper.SimpleCallback mSimpleItemTouchCallback;
 
@@ -158,8 +157,8 @@ public class CrimeListFragment extends Fragment {
         mCrimeAdapter = new CrimeAdapter();
 
 
-        mViewModelFactory = Injection.provideViewModelFactory(getActivity());
-        mListViewModel = ViewModelProviders.of(getActivity(), mViewModelFactory).get(ListViewModel.class);
+        final ViewModelFactory viewModelFactory = Injection.provideViewModelFactory(getActivity());
+        mListViewModel = ViewModelProviders.of(getActivity(), viewModelFactory).get(ListViewModel.class);
 
         subscribeToModel();
 
@@ -478,7 +477,7 @@ public class CrimeListFragment extends Fragment {
         @Override
         public int getItemViewType(final int position) {
 
-            return mItems.get(position).isSeriousCrime() ? 1 : 0;
+            return mItems.get(position).isSerious() ? 1 : 0;
         }
 
         @Override
