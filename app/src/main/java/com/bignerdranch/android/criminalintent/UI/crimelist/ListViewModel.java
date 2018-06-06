@@ -1,5 +1,7 @@
 package com.bignerdranch.android.criminalintent.UI.crimelist;
 
+import android.app.Application;
+import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.ViewModel;
 import android.util.Log;
@@ -15,7 +17,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
-public class ListViewModel extends ViewModel {
+public class ListViewModel extends AndroidViewModel {
 
     private static final String TAG = ListViewModel.class.getSimpleName().concat("::JPC");
 
@@ -26,7 +28,8 @@ public class ListViewModel extends ViewModel {
     private boolean mIsSubtitleVisible;
 
 
-    public ListViewModel(final CrimeRepository dataSource) {
+    public ListViewModel(final CrimeRepository dataSource, final Application app) {
+        super(app);
         Log.d(TAG, "ListViewModel: viewModel lifecycle START");
         mDataSource = dataSource;
 
