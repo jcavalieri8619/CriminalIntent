@@ -1,5 +1,6 @@
 package com.bignerdranch.android.criminalintent;
 
+import android.app.Activity;
 import android.content.Context;
 
 import com.bignerdranch.android.criminalintent.UI.ViewModelFactory;
@@ -21,7 +22,7 @@ public class Injection {
 
     public static ViewModelFactory provideViewModelFactory(Context ctx) {
 
-        return new ViewModelFactory(provideCrimeRepository(ctx));
+        return new ViewModelFactory(provideCrimeRepository(ctx),((Activity)ctx) );
     }
 
     public static DetailViewModel.Factory provideDetailModelFactory(Context ctx,UUID ID) {
