@@ -1,17 +1,15 @@
-package com.bignerdranch.android.criminalintent.UI.crimedetail;
+package com.bignerdranch.android.criminalintent.ui.crimedetail;
 
-import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
 import android.arch.lifecycle.ViewModelProvider;
 import android.databinding.ObservableBoolean;
-import android.databinding.ObservableField;
 import android.util.Log;
 
 import com.bignerdranch.android.criminalintent.HeaderGenerator;
 import com.bignerdranch.android.criminalintent.database.entity.CrimeEntity;
 import com.bignerdranch.android.criminalintent.model.Crime;
 import com.bignerdranch.android.criminalintent.repository.CrimeRepository;
-
+import com.bignerdranch.android.criminalintent.ui.ObservableCrime;
 
 import java.util.Date;
 import java.util.UUID;
@@ -28,44 +26,140 @@ public class DetailViewModel extends ViewModel {
 
     private final CrimeRepository mDataSource;
 
-
-    private CrimeEntity backingEntity = new CrimeEntity();
-
-    public final ObservableBoolean mIsLoading = new ObservableBoolean();
+    public final ObservableBoolean mIsLoading = new ObservableBoolean(true);
 
 
-    public final ObservableField<String> crimeTitle = new ObservableField<>();
-    public final ObservableField<String> crimeDate = new ObservableField<>();
-    public final ObservableField<UUID> crimeID = new ObservableField<>();
-    public final ObservableBoolean crimeSolved = new ObservableBoolean();
-    public final ObservableBoolean crimeSerious = new ObservableBoolean();
+    public final ObservableCrime observableEntity = new ObservableCrime();
 
-
-
-    private boolean mAddingNewCrime;
+    private Disposable mDisposable;
 
     private UUID mUUID;
 
+
     DetailViewModel(final CrimeRepository dataSource, final UUID ID) {
-        Log.d(TAG, "DetailViewModel: viewModel lifecycle " +System.identityHashCode(this) +": START");
+        Log.d(TAG, "DetailViewModel: viewModel lifecycle " + System.identityHashCode(this) + ": START");
 
         mDataSource = dataSource;
 
 
         mUUID = ID;
 
-        mIsLoading.set(true);
 
 
         if (mUUID.equals(HeaderGenerator.getHeaderEntity().getID())) {
-            mAddingNewCrime = true;
-            initObservableFields(backingEntity);
+            initObservableFields(new CrimeEntity());
 
             mIsLoading.set(false);
 
 
-        }else{
-            mAddingNewCrime = false;
+        } else {
+
+
+//            mDataSource.getObservableForID(mUUID)
+//                    .observeOn(AndroidSchedulers.mainThread())
+//                    .subscribeOn(Schedulers.io())
+//                    .subscribe(new Observer<CrimeEntity>() {
+//                        @Override
+//                        public void onSubscribe(final Disposable d) {
+//
+//                            Log.d(TAG, "onSubscribe flowable: attempting to fetch crime ID: " + mUUID);
+//
+//                            mDisposable = d;
+//                            mIsLoading.set(true);
+//
+//                        }
+//
+//                        @Override
+//                        public void onNext(final CrimeEntity entity) {
+//
+//                            Log.d(TAG, "onSuccess flowable: sucessfully fetched crime from repo: " + entity);
+//
+//                            initObservableFields(entity);
+//
+//
+//                            mIsLoading.set(false);
+//
+//
+//                        }
+//
+//                        @Override
+//                        public void onError(final Throwable e) {
+//                            Log.d(TAG, "onError: flowable error fetching crime from repo");
+//
+//                        }
+//
+//                        @Override
+//                        public void onComplete() {
+//
+//                        }
+//                    });
+
+//            mDataSource.getObservableForID(mUUID)
+//                    .observeOn(AndroidSchedulers.mainThread())
+//                    .subscribeOn(Schedulers.io())
+//                    .elementAt(0, new CrimeEntity())
+//                    .subscribe(new SingleObserver<CrimeEntity>() {
+//                        @Override
+//                        public void onSubscribe(final Disposable d) {
+//
+//                            Log.d(TAG, "onSubscribe flowable: attempting to fetch crime ID: " + mUUID);
+//                        }
+//
+//                        @Override
+//                        public void onSuccess(final CrimeEntity entity) {
+//
+//                            Log.d(TAG, "onSuccess flowable: sucessfully fetched crime from repo: " + entity);
+//
+//                            initObservableFields(entity);
+//
+//                            mIsLoading.set(false);
+//
+//                            Completable.fromAction(() -> {
+//
+//                                SystemClock.sleep(5000);
+//
+//                                DetailViewModel.this.setSolvedFlag(true);
+//
+//                                DetailViewModel.this.updateCrime();
+//
+//                            }).subscribeOn(Schedulers.io())
+//                                    .subscribe(new CompletableObserver() {
+//                                        @Override
+//                                        public void onSubscribe(final Disposable d) {
+//                                            Log.d(TAG, "onSubscribe: TESTING FLOWABLE");
+//
+//                                        }
+//
+//                                        @Override
+//                                        public void onComplete() {
+//
+//                                            Log.d(TAG, "onComplete: TESTING FLOWABLE; solved flag should be true now");
+//
+//                                        }
+//
+//                                        @Override
+//                                        public void onError(final Throwable e) {
+//
+//                                            Log.d(TAG, "onError: TESTING FLOWABLE");
+//                                        }
+//                                    });
+//
+//                        }
+//
+//                        @Override
+//                        public void onError(final Throwable e) {
+//
+//                            Log.d(TAG, "onError flowable: failed to fetch crime from repo with ID: " + mUUID, e);
+//
+//
+//                            //FIXME probably not needed since elementAT will return default entity
+////                            initObservableFields(new CrimeEntity());
+////
+////                            mIsLoading.set(false);
+//
+//                        }
+//                    });
+
 
             mDataSource.getForID(mUUID)
                     .observeOn(AndroidSchedulers.mainThread())
@@ -82,13 +176,10 @@ public class DetailViewModel extends ViewModel {
 
                             Log.d(TAG, "onSuccess: sucessfully fetched crime from repo: " + crimeEntity);
 
-                            backingEntity = crimeEntity;
                             initObservableFields(crimeEntity);
 
+
                             mIsLoading.set(false);
-
-
-                            Log.d(TAG, "onSuccess: TESTING adding new crime = false");
 
 
                         }
@@ -103,10 +194,9 @@ public class DetailViewModel extends ViewModel {
                             // result in random ID
 
                             Log.d(TAG, "onError: failed to fetch crime from repo with ID: " + mUUID, e);
-                            Log.d(TAG, "onError: TESTING adding new crime = true");
 
-                            mAddingNewCrime = true;
-                            initObservableFields(backingEntity);
+
+                            initObservableFields(new CrimeEntity());
 
                             mIsLoading.set(false);
                         }
@@ -114,10 +204,6 @@ public class DetailViewModel extends ViewModel {
 
 
         }
-
-
-
-
 
 
         /**
@@ -332,11 +418,14 @@ public class DetailViewModel extends ViewModel {
     private void initObservableFields(CrimeEntity entity) {
 
 
-        crimeDate.set(Crime.crimeDateToString(entity.getDate()));
-        crimeTitle.set(entity.getTitle());
-        crimeID.set(entity.getID());
-        crimeSerious.set(entity.isSeriousCrime());
-        crimeSolved.set(entity.isSolved());
+        observableEntity.setID(entity.getID());
+        observableEntity.setDate(entity.getDate());
+        observableEntity.setTitle(entity.getTitle());
+        observableEntity.setSuspect(entity.getSuspect());
+        observableEntity.setSolved(entity.isSolved());
+        observableEntity.setSerious(entity.isSerious());
+        observableEntity.setPhotoPath(entity.getPhotoPath());
+
     }
 
     /**
@@ -349,105 +438,63 @@ public class DetailViewModel extends ViewModel {
     protected void onCleared() {
         super.onCleared();
 
-        Log.d(TAG, "onCleared: viewModel lifecycle "+System.identityHashCode(this) +" END ");
+        if (mDisposable != null && !mDisposable.isDisposed()) {
+            mDisposable.dispose();
+
+        }
+
+        Log.d(TAG, "onCleared: viewModel lifecycle " + System.identityHashCode(this) + " END ");
 
     }
-
-
 
 
     public void setTitle(String title) {
 
 
-        backingEntity.setTitle(title);
+        observableEntity.ssetTitle(title);
 
     }
 
     public String getTitle() {
-        return backingEntity.getTitle();
+        return observableEntity.getTitle();
     }
 
 
+    public Crime getCurrentCrime() {
+        return observableEntity.retrieveBackingEntity();
+    }
+
     public Date getDate() {
-//        return Crime.crimeDateFromString(mCrime.getDate());
-        return backingEntity.getDate();
+        return observableEntity.getDate();
     }
 
     public String getDateString() {
-        return Crime.crimeDateToString(backingEntity.getDate());
+        return Crime.crimeDateToString(observableEntity.getDate());
     }
 
     public void setDate(Date date) {
-        backingEntity.setDate(date);
-        crimeDate.set(Crime.crimeDateToString(date));
+        observableEntity.setDate(date);
 
     }
 
     public void setSeriousFlag(boolean isSerious) {
 
-        backingEntity.setSeriousCrime(isSerious);
+        observableEntity.ssetSerious(isSerious);
     }
 
     public boolean getSeriousFlag() {
-        return backingEntity.isSeriousCrime();
+        return observableEntity.isSerious();
     }
 
     public void setSolvedFlag(boolean isSolved) {
-        backingEntity.setSolved(isSolved);
+        observableEntity.ssetSolved(isSolved);
 
     }
 
     public boolean getSolvedFlag() {
-        return backingEntity.isSolved();
+        return observableEntity.isSolved();
     }
 
-
-//    public void injectNextID(UUID uuid) {
-//        mUUID = uuid;
-//
-//        // if we are injecting the next ID to be paged then can't possibly be adding new crime
-//        mAddingNewCrime = false;
-//
-//
-//        mDataSource.getForID(mUUID)
-//                .subscribeOn(Schedulers.io())
-//                .observeOn(AndroidSchedulers.mainThread())
-//                .subscribe(new SingleObserver<CrimeEntity>() {
-//                    @Override
-//                    public void onSubscribe(final Disposable d) {
-//
-//                        Log.d(TAG, "onSubscribe: attempting to fetch crime ID: " + mUUID);
-//                    }
-//
-//                    @Override
-//                    public void onSuccess(final CrimeEntity crimeEntity) {
-//
-//                        Log.d(TAG, "onSuccess: sucessfully fetched crime from repo: " + crimeEntity);
-////                        crime_to_ObservableFields(crimeEntity);
-//
-//
-//                        backingEntity = crimeEntity;
-//                        initObservableFields(crimeEntity);
-//
-//
-//                        mIsLoading.set(false);
-//
-////                        mAddingNewCrime = false;
-//                    }
-//
-//                    @Override
-//                    public void onError(final Throwable e) {
-//
-//                        // FIXME this is probably a true error if we end up here
-//                        // b/c we either received the HEADER ID or a valid entity's ID
-//                        // and if header then we don't even attempt to query repo
-//
-//
-//                        Log.d(TAG, "onError: failed to fetch crime from repo with ID: " + mUUID, e);
-////                        mAddingNewCrime = true;
-//                    }
-//                });
-//    }
 
     /**
      * this methods act on the state of the viewModel so the crime
@@ -455,9 +502,10 @@ public class DetailViewModel extends ViewModel {
      * within this viewmodel
      */
     public void updateCrime() {
-        Log.d(TAG, "updateCrime: updating crime in repo\n" + backingEntity.toString());
+        Log.d(TAG, "updateCrime: <REPO> updating crime in repo\n"
+                + observableEntity.retrieveBackingEntity().toString());
 
-        mDataSource.update(backingEntity)
+        mDataSource.update(observableEntity.retrieveBackingEntity())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
                 .subscribe(new CompletableObserver() {
@@ -478,7 +526,7 @@ public class DetailViewModel extends ViewModel {
                     @Override
                     public void onError(final Throwable e) {
 
-                        Log.d(TAG, "onError: failed to update crime in Repo", e);
+                        Log.d(TAG, "onError: failed to update crime in Repo");
 
                     }
                 });
@@ -487,10 +535,11 @@ public class DetailViewModel extends ViewModel {
 
     public void addCrime() {
 
-        Log.d(TAG, "addCrime: attempting insert new crime in repo\n" + backingEntity.toString());
+        Log.d(TAG, "addCrime: <REPO> attempting insert new crime in repo\n"
+                + observableEntity.retrieveBackingEntity().toString());
 
 
-        mDataSource.insert(backingEntity)
+        mDataSource.insert(observableEntity.retrieveBackingEntity())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
                 .subscribe(new CompletableObserver() {
@@ -523,8 +572,21 @@ public class DetailViewModel extends ViewModel {
 
     }
 
-    public boolean isAddingNewCrime() {
-        return mAddingNewCrime;
+    public void setSuspectName(final String suspect) {
+        observableEntity.setSuspect(suspect);
+
+    }
+
+    public String getSuspectName() {
+        return observableEntity.getSuspect();
+    }
+
+    public void setHasPhoto(boolean hasPath) {
+        observableEntity.setPhotoPath(hasPath);
+    }
+
+    public boolean hasPhoto() {
+        return observableEntity.getPhotoPath();
     }
 
 
