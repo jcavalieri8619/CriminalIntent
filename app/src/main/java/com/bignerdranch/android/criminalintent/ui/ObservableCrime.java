@@ -1,13 +1,12 @@
-package com.bignerdranch.android.criminalintent.UI;
+package com.bignerdranch.android.criminalintent.ui;
 
 
-import android.databinding.Bindable;
 import android.databinding.BaseObservable;
+import android.databinding.Bindable;
 
 import com.bignerdranch.android.criminalintent.BR;
 import com.bignerdranch.android.criminalintent.database.entity.CrimeEntity;
 import com.bignerdranch.android.criminalintent.model.Crime;
-
 
 import java.util.Date;
 import java.util.UUID;
@@ -23,15 +22,18 @@ public class ObservableCrime extends BaseObservable implements Crime {
     private String suspect;
     private boolean serious;
     private boolean solved;
+    private boolean photopath;
 
 
     public ObservableCrime() {
-//        CrimeEntity entity = new CrimeEntity();
-//        ID = entity.getID();
-//        date = entity.getDate();
-//        title = entity.getTitle();
-//        serious = entity.isSerious();
-//        solved = entity.isSolved();
+        CrimeEntity entity = new CrimeEntity();
+        ID = entity.getID();
+        date = entity.getDate();
+        title = entity.getTitle();
+        serious = entity.isSerious();
+        solved = entity.isSolved();
+        photopath = entity.getPhotoPath();
+        suspect = entity.getSuspect();
 
     }
 
@@ -42,19 +44,25 @@ public class ObservableCrime extends BaseObservable implements Crime {
         title = entity.getTitle();
         serious = entity.isSerious();
         solved = entity.isSolved();
+        photopath = entity.getPhotoPath();
     }
 
     public CrimeEntity retrieveBackingEntity() {
-        CrimeEntity entity = new CrimeEntity();
+        synchronized (this) {
 
-        entity.setID(getID());
-        entity.setDate(getDate());
-        entity.setSuspect(getSuspect());
-        entity.setTitle(getTitle());
-        entity.setSerious(isSerious());
-        entity.setSolved(isSolved());
+            CrimeEntity entity = new CrimeEntity();
 
-        return entity;
+            entity.setID(getID());
+            entity.setDate(getDate());
+            entity.setSuspect(getSuspect());
+            entity.setTitle(getTitle());
+            entity.setSerious(isSerious());
+            entity.setSolved(isSolved());
+            entity.setPhotoPath(getPhotoPath());
+
+            return entity;
+        }
+
     }
 
 
@@ -86,7 +94,6 @@ public class ObservableCrime extends BaseObservable implements Crime {
 
     @Bindable
     public Date getDate() {
-//        return Crime.crimeDateToString(date);
         return date;
     }
 
@@ -142,6 +149,36 @@ public class ObservableCrime extends BaseObservable implements Crime {
             this.suspect = suspect;
 
             notifyPropertyChanged(BR.suspect);
+
+        }
+    }
+
+
+    @Override
+    @Bindable
+    public boolean getPhotoPath() {
+        return photopath;
+    }
+
+    @Override
+    public void setPhotoPath(final boolean hasPath) {
+
+        if (hasPath != photopath) {
+
+            photopath = hasPath;
+
+            notifyPropertyChanged(BR.photoPath);
+
+
+        }
+    }
+
+    public void ssetPhotopath(final boolean hasPath) {
+
+        if (hasPath != photopath) {
+
+            photopath = hasPath;
+
 
         }
     }
