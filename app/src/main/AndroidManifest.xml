@@ -12,15 +12,28 @@
         android:theme="@style/Theme.AppCompat"
         >
 
-        <activity android:name=".UI.crimelist.CrimeListActivity">
+        <activity android:name=".ui.crimelist.CrimeListActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".UI.crimedetail.CrimePagerActivity"
-            android:parentActivityName=".UI.crimelist.CrimeListActivity"></activity>
+        <activity
+            android:name=".ui.crimedetail.CrimePagerActivity"
+            android:parentActivityName=".ui.crimelist.CrimeListActivity" />
+
+        <provider
+            android:authorities="com.bignerdranch.android.criminalintent.fileprovider"
+            android:name="android.support.v4.content.FileProvider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/files" />
+        </provider>
+
+
     </application>
 
 </manifest>
