@@ -34,6 +34,9 @@ public class CrimeEntity implements Crime{
     @ColumnInfo(name = "suspect_column")
     private String mSuspect;
 
+    @ColumnInfo(name = "photoPath_column")
+    private boolean mPhotoPath;
+
     @ColumnInfo(name = "date_column")
     private Date mDate;
 
@@ -51,6 +54,7 @@ public class CrimeEntity implements Crime{
         mDate = new Date();
         mSerious=false;
         mSolved = false;
+        mPhotoPath = false;
 
     }
 
@@ -81,6 +85,16 @@ public class CrimeEntity implements Crime{
     public void setSuspect(final String suspect) {
 
         mSuspect = suspect;
+    }
+
+    @Override
+    public boolean getPhotoPath() {
+        return mPhotoPath;
+    }
+
+    @Override
+    public void setPhotoPath(boolean hasPath) {
+        mPhotoPath = hasPath;
     }
 
     public Date getDate() {
