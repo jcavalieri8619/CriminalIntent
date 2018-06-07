@@ -1,6 +1,5 @@
-package com.bignerdranch.android.criminalintent.UI;
+package com.bignerdranch.android.criminalintent.ui;
 
-import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
