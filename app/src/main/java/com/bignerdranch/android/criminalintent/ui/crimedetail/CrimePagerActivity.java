@@ -1,26 +1,25 @@
-package com.bignerdranch.android.criminalintent.UI.crimedetail;
+package com.bignerdranch.android.criminalintent.ui.crimedetail;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.bignerdranch.android.criminalintent.HeaderGenerator;
 import com.bignerdranch.android.criminalintent.Injection;
 import com.bignerdranch.android.criminalintent.R;
-import com.bignerdranch.android.criminalintent.UI.DatePickerFragment;
-import com.bignerdranch.android.criminalintent.UI.ViewModelFactory;
 import com.bignerdranch.android.criminalintent.model.Crime;
+import com.bignerdranch.android.criminalintent.ui.DatePickerFragment;
+import com.bignerdranch.android.criminalintent.ui.ViewModelFactory;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -41,10 +40,11 @@ public class CrimePagerActivity extends AppCompatActivity implements CrimeFragme
 
     private CrimePagerAdapter mCrimePageAdapter;
 
-    private ViewModelFactory mViewModelFactory;
-
     private DetailPagerViewModel mDetailPagerViewModel;
 
+    private UUID mCrime_ID = null;
+
+    private boolean mPositionAlreadySet = false;
 
 
     @Override
@@ -100,6 +100,7 @@ public class CrimePagerActivity extends AppCompatActivity implements CrimeFragme
     }
 
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -107,10 +108,12 @@ public class CrimePagerActivity extends AppCompatActivity implements CrimeFragme
 
         setContentView(R.layout.activity_crime_pager);
 
-        mViewModelFactory = Injection.provideViewModelFactory(this);
-        mDetailPagerViewModel = ViewModelProviders.of(this, mViewModelFactory).get(DetailPagerViewModel.class);
+
+        final ViewModelFactory viewModelFactory = Injection.provideViewModelFactory(this);
+        mDetailPagerViewModel = ViewModelProviders.of(this, viewModelFactory).get(DetailPagerViewModel.class);
 
 
+        mPositionAlreadySet = false;
         setupViewPager();
 
         setupViews();
@@ -118,7 +121,7 @@ public class CrimePagerActivity extends AppCompatActivity implements CrimeFragme
         subscribeToModel();
 
 
-        UUID crime_ID = null;
+
         if (getIntent().getBooleanExtra(NEW_CRIME_EXTRA, false)) {
             Log.d(TAG, "onCreate: Received NEW_CRIME_EXTRA to add new crime");
 
@@ -128,16 +131,31 @@ public class CrimePagerActivity extends AppCompatActivity implements CrimeFragme
 
             // CRIME__UUID_EXTRA is only added by ListFrag if we ARE_NOT adding new
             // crime so still need to check NEW_CRIME_EXTRA value
-            crime_ID = (UUID) getIntent().getSerializableExtra(CRIME_UUID_EXTRA);
-
-
-            mCrimePager.setCurrentItem(mDetailPagerViewModel.getCrimeIndexByUUID(crime_ID));
+            mCrime_ID = (UUID) getIntent().getSerializableExtra(CRIME_UUID_EXTRA);
 
 
         }
 
 
+    }
 
+    private int indexOfUUID(List<? extends Crime> list, UUID uuid) {
+        if (list == null) {
+            Log.d(TAG, "indexOfUUID: list from ListViewModel is null");
+
+            return 0;
+        }
+
+        for (int i = 0; i < list.size(); i++) {
+            if (list.get(i).getID().equals(uuid)) {
+                Log.d(TAG, "indexOfUUID: found index of UUID at " + i);
+
+                return i;
+            }
+        }
+        Log.d(TAG, "indexOfUUID: cound't find UUID in list");
+
+        return 0;
     }
 
     private void setupViewPager() {
@@ -159,6 +177,17 @@ public class CrimePagerActivity extends AppCompatActivity implements CrimeFragme
                 Log.d(TAG, "subscribeToModel: updating pager's crimes list of size: "
                         + crimes.size() + "\n\tcrimes[0] = " + crimes.get(0).toString());
                 mCrimePageAdapter.submitItems(crimes);
+
+
+                // position should only be set when Pager is first created, but this callback
+                // is called on each update to Repo so use boolean to track whether we
+                // already set position because this activity is just starting else
+                // we do not set the item position
+                if (!mPositionAlreadySet) {
+
+                    mCrimePager.setCurrentItem(indexOfUUID(crimes, mCrime_ID));
+                    mPositionAlreadySet = true;
+                }
 
             }
 
@@ -206,8 +235,8 @@ public class CrimePagerActivity extends AppCompatActivity implements CrimeFragme
     @Override
     public void onDatePicked(final Calendar picked_date) {
 
-        ((CrimeFragment) mCrimePageAdapter.instantiateItem(mCrimePager,
-                mCrimePager.getCurrentItem())).onUserChangedDateTime(picked_date);
+
+        ((CrimeFragment) mCrimePageAdapter.getCurrentFragment()).onUserChangedDateTime(picked_date);
 
     }
 
@@ -215,7 +244,10 @@ public class CrimePagerActivity extends AppCompatActivity implements CrimeFragme
     private class CrimePagerAdapter extends FragmentStatePagerAdapter {
 
         private final String TAG_CPA = CrimePagerAdapter.class.getSimpleName().concat("::JPC");
+        private Fragment mCurrentFragment;
+
         List<? extends Crime> mItems = new ArrayList<>();
+
 
         public CrimePagerAdapter(final FragmentManager fm) {
 
@@ -224,13 +256,24 @@ public class CrimePagerActivity extends AppCompatActivity implements CrimeFragme
 
         }
 
+        public Fragment getCurrentFragment() {
+            return mCurrentFragment;
+        }
+
+
+        @Override
+        public void setPrimaryItem(ViewGroup container, int position, Object object) {
+            if (getCurrentFragment() != object) {
+                mCurrentFragment = ((Fragment) object);
+            }
+            super.setPrimaryItem(container, position, object);
+        }
+
         public void submitItems(List<? extends Crime> items) {
             Log.d(TAG_CPA, "submitItems: items size: " + items.size());
 
-//            int currItemIndex = mCrimePager.getCurrentItem();
             mItems = items;
             super.notifyDataSetChanged();
-//            mCrimePager.setCurrentItem(currItemIndex);
 
         }
 
@@ -238,6 +281,7 @@ public class CrimePagerActivity extends AppCompatActivity implements CrimeFragme
         @Override
         public Object instantiateItem(final ViewGroup container, final int position) {
             return super.instantiateItem(container, position);
+
         }
 
         /**
@@ -254,7 +298,6 @@ public class CrimePagerActivity extends AppCompatActivity implements CrimeFragme
             // OR it could be valid crime ID if mItems.size > 1 strictly
 
             UUID nextID = mItems.get(position).getID();
-
 
             return CrimeFragment.newInstanceForUUID(nextID);
 
