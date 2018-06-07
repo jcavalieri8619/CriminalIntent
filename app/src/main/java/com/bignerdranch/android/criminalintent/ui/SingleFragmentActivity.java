@@ -1,6 +1,5 @@
-package com.bignerdranch.android.criminalintent.UI;
+package com.bignerdranch.android.criminalintent.ui;
 
-import android.nfc.Tag;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
