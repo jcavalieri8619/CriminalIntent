@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.bignerdranch.android.criminalintent.UI;
+package com.bignerdranch.android.criminalintent.ui;
 
 import android.databinding.BindingAdapter;
 import android.view.View;
