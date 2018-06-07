@@ -3,8 +3,8 @@ package com.bignerdranch.android.criminalintent;
 import android.app.Activity;
 import android.content.Context;
 
-import com.bignerdranch.android.criminalintent.UI.ViewModelFactory;
-import com.bignerdranch.android.criminalintent.UI.crimedetail.DetailViewModel;
+import com.bignerdranch.android.criminalintent.ui.ViewModelFactory;
+import com.bignerdranch.android.criminalintent.ui.crimedetail.DetailViewModel;
 import com.bignerdranch.android.criminalintent.database.AppDatabase;
 import com.bignerdranch.android.criminalintent.repository.CrimeRepository;
 import com.bignerdranch.android.criminalintent.repository.CrimeRepositoryImpl;
