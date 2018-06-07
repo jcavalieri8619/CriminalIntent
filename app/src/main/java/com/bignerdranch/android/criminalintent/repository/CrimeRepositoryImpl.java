@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.UUID;
 
 import io.reactivex.Completable;
+import io.reactivex.Flowable;
+import io.reactivex.Observable;
 import io.reactivex.Single;
 
 public class CrimeRepositoryImpl implements CrimeRepository {
@@ -44,6 +46,11 @@ public class CrimeRepositoryImpl implements CrimeRepository {
     public Single<CrimeEntity> getForID(final UUID crime_uuid) {
         return mDAO.loadForID(crime_uuid);
 
+    }
+
+    @Override
+    public Observable<CrimeEntity> getObservableForID(final UUID crime_uuid) {
+        return mDAO.loadForID_observable(crime_uuid).toObservable();
     }
 
     @Override

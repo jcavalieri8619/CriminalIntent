@@ -15,7 +15,9 @@ import java.util.UUID;
 import java.util.function.Consumer;
 
 import io.reactivex.Completable;
+import io.reactivex.Flowable;
 import io.reactivex.Maybe;
+import io.reactivex.Observable;
 import io.reactivex.Single;
 
 public class MockCrimeRepositoryImpl implements CrimeRepository {
@@ -70,6 +72,11 @@ public class MockCrimeRepositoryImpl implements CrimeRepository {
 
     @Override
     public Single<CrimeEntity> getForID(final UUID crime_uuid) {
+        return null;
+    }
+
+    @Override
+    public Observable<CrimeEntity> getObservableForID(final UUID crime_uuid) {
         return null;
     }
 

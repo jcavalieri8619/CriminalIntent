@@ -3,13 +3,13 @@ package com.bignerdranch.android.criminalintent.repository;
 import android.arch.lifecycle.LiveData;
 
 import com.bignerdranch.android.criminalintent.database.entity.CrimeEntity;
-import com.bignerdranch.android.criminalintent.model.Crime;
 
 import java.util.List;
 import java.util.UUID;
 
 import io.reactivex.Completable;
-import io.reactivex.Maybe;
+
+import io.reactivex.Observable;
 import io.reactivex.Single;
 
 public interface CrimeRepository {
@@ -26,6 +26,8 @@ public interface CrimeRepository {
 
     Single<CrimeEntity> getForID(UUID crime_uuid);
 
+
+    Observable<CrimeEntity> getObservableForID(UUID crime_uuid);
 
 
     Single<CrimeEntity> getForTitle(String title);
