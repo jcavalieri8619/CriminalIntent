@@ -13,6 +13,8 @@ import com.bignerdranch.android.criminalintent.model.Crime;
 import java.util.List;
 import java.util.UUID;
 
+import io.reactivex.Flowable;
+import io.reactivex.Observable;
 import io.reactivex.Single;
 
 import static android.arch.persistence.room.OnConflictStrategy.FAIL;
@@ -35,6 +37,11 @@ public interface CrimeDAO {
     @Query("SELECT * FROM crimesDB WHERE uuid_column LIKE :crime_uuid "
             + "LIMIT 1")
     Single<CrimeEntity> loadForID(UUID crime_uuid);
+
+    @Query("SELECT * FROM crimesDB WHERE uuid_column LIKE :crime_uuid "
+            + "LIMIT 1")
+    Flowable<CrimeEntity> loadForID_observable(UUID crime_uuid);
+
 
     @Query("SELECT * FROM crimesDB WHERE title_column LIKE :title LIMIT 1")
     Single<CrimeEntity> loadForTitle(String title);
