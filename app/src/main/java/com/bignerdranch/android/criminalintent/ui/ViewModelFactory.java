@@ -1,14 +1,12 @@
-package com.bignerdranch.android.criminalintent.UI;
+package com.bignerdranch.android.criminalintent.ui;
 
 import android.app.Activity;
-import android.app.Application;
 import android.arch.lifecycle.ViewModel;
-import android.content.Context;
 import android.support.annotation.NonNull;
 
-import com.bignerdranch.android.criminalintent.UI.crimedetail.DetailPagerViewModel;
-import com.bignerdranch.android.criminalintent.UI.crimelist.ListViewModel;
 import com.bignerdranch.android.criminalintent.repository.CrimeRepository;
+import com.bignerdranch.android.criminalintent.ui.crimedetail.DetailPagerViewModel;
+import com.bignerdranch.android.criminalintent.ui.crimelist.ListViewModel;
 
 public class ViewModelFactory implements android.arch.lifecycle.ViewModelProvider.Factory {
     CrimeRepository mDataSource;
