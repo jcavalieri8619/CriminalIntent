@@ -2,7 +2,6 @@ package com.bignerdranch.android.criminalintent.model;
 
 import android.icu.text.DateFormat;
 import android.icu.text.SimpleDateFormat;
-import android.util.Log;
 
 import java.text.ParseException;
 import java.util.Date;
@@ -25,6 +24,10 @@ public interface Crime {
     String getSuspect();
 
     void setSuspect(final String suspect);
+
+    boolean getPhotoPath();
+
+    void setPhotoPath(boolean path);
 
 
     Date getDate();
@@ -65,6 +68,10 @@ public interface Crime {
         }
 
         return date;
+    }
+
+    default String buildPhotoPath() {
+        return "IMG_" + getID().toString() + ".jpg";
     }
 
 
