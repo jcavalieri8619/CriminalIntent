@@ -3,6 +3,7 @@ package com.bignerdranch.android.criminalintent;
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.graphics.Point;
 
 public class PictureUtils {
@@ -33,7 +34,14 @@ public class PictureUtils {
 
         options.inSampleSize = inSampleSize;
 
-        return BitmapFactory.decodeFile(path, options);
+        Bitmap scaleBitmap = BitmapFactory.decodeFile(path, options);
+
+
+        Matrix rotate90 = new Matrix();
+        rotate90.postRotate(90);
+
+
+        return Bitmap.createBitmap(scaleBitmap, 0, 0, scaleBitmap.getWidth(), scaleBitmap.getHeight(), rotate90, false);
 
 
     }
