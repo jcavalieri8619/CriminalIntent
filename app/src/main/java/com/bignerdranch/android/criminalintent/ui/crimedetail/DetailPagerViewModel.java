@@ -1,4 +1,4 @@
-package com.bignerdranch.android.criminalintent.UI.crimedetail;
+package com.bignerdranch.android.criminalintent.ui.crimedetail;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MediatorLiveData;
@@ -13,7 +13,6 @@ import com.bignerdranch.android.criminalintent.repository.CrimeRepository;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.UUID;
 
 public class DetailPagerViewModel extends ViewModel {
 
@@ -43,6 +42,7 @@ public class DetailPagerViewModel extends ViewModel {
                 Log.d(TAG, "onChanged: inside MediatorLiveData - emitted: "
                         + String.valueOf(crimeEntities.size()));
 
+
                 mObservableCrimes.setValue(crimeEntities);
 
             }
@@ -70,9 +70,6 @@ public class DetailPagerViewModel extends ViewModel {
     }
 
 
-    public int getCrimeIndexByUUID(UUID uuid) {
-        return 0;
-    }
 
 
     public LiveData<List<CrimeEntity>> getAllCrimes() {
