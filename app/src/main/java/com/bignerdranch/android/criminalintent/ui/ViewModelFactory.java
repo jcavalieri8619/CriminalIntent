@@ -9,9 +9,9 @@ import com.bignerdranch.android.criminalintent.ui.crimedetail.DetailPagerViewMod
 import com.bignerdranch.android.criminalintent.ui.crimelist.ListViewModel;
 
 public class ViewModelFactory implements android.arch.lifecycle.ViewModelProvider.Factory {
-    CrimeRepository mDataSource;
+    private CrimeRepository mDataSource;
 
-    Activity mActivity;
+    private Activity mActivity;
 
 
     public ViewModelFactory(final CrimeRepository dataSource, Activity activity) {
