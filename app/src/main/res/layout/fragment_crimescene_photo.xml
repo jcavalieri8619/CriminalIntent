@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.crimedetail.CrimeSceneViewer">
+
+
+    <ImageView
+        android:id="@+id/crimescene_image"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:adjustViewBounds="false"
+        android:contentDescription="@string/photo_of_crime_scene"
+        android:padding="8dp"
+        android:scaleType="fitXY"
+        android:src="@android:drawable/editbox_dropdown_light_frame" />
+</FrameLayout>
